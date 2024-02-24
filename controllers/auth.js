@@ -2,17 +2,15 @@ import User from "../models/user";
 import { hashPassword, comparePassword } from "../helpers/auth";
 import jwt from "jsonwebtoken";
 import nanoid from "nanoid";
-import { SENDGRID_KEY } from '../config';
+import { SENDGRID_KEY, JWT_SECRET } from '../config';
 
 // sendgrid
 require("dotenv").config();
 const sgMail = require("@sendgrid/mail");
-// sgMail.setApiKey(process.env.SENDGRID_KEY);
 sgMail.setApiKey(SENDGRID_KEY);
 console.log('SENDGRID_KEY', SENDGRID_KEY);
 
 export const signup = async (req, res) => {
-  console.log("HIT SIGNUP");
   try {
     // validation
     const { name, email, password } = req.body;
@@ -48,11 +46,11 @@ export const signup = async (req, res) => {
       }).save();
 
       // create signed token
-      const token = jwt.sign({ _id: user._id }, process.env.JWT_SECRET, {
+      const token = jwt.sign({ _id: user._id }, JWT_SECRET, {
         expiresIn: "7d",
       });
 
-      //   console.log(user);
+      console.log('user1', user);
       const { password, ...rest } = user._doc;
       return res.json({
         token,
